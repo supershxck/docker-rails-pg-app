@@ -1,0 +1,32 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  # The PostgreSQL Database Service
+  db:
+    image: postgres:15 # Use official postgres image
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist data
+    environment:
+      POSTGRES_PASSWORD: password # Set a password
+      # Rails will create the DB, so we don't need POSTGRES_DB
+
+  # The Rails Application Service
+  web:
+    build: . # Build the image from the Dockerfile in the current directory
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/usr/src/app # Mount your app code into the container for live updates
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db # Wait for the db service to start before starting the web service
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
+      RAILS_ENV: development
+
+volumes:
+  postgres_data: # Define the named volume for data persistence
