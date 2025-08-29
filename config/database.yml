@@ -1,0 +1,17 @@
+# config/database.yml
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DATABASE_HOST") %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: todo_web_development
+
+test:
+  <<: *default
+  database: todo_web_test
